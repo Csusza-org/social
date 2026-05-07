@@ -21,6 +21,7 @@ Secure Social is a privacy-first social media platform where all user content is
 3. **Audit Crypto Logic**: Any changes to `frontend/src/lib/crypto.ts` or `frontend/src/hooks/useCrypto.ts` must be rigorously verified to ensure they don't weaken the encryption or leak keys.
 4. **Assume Hostile Backend**: Design client-side logic as if the backend could be compromised. Always verify signatures (if implemented) and decrypt only on the client.
 5. **No Weak Primitives**: Use only strong, modern cryptographic primitives (AES-GCM, RSA-OAEP with SHA-256). Avoid legacy or custom crypto.
+6. **Package Manager**: Never use npm and npx. Use bun and bunx instead.
 
 ## Key Files
 - `convex/schema.ts`: Database structure for encrypted data.

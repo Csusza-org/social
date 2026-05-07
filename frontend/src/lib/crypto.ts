@@ -25,7 +25,7 @@ export async function generateUserKeyPair(): Promise<CryptoKeyPair> {
       publicExponent: new Uint8Array([1, 0, 1]),
     },
     true, // extractable
-    ["encrypt", "decrypt"]
+    ["encrypt", "decrypt", "wrapKey", "unwrapKey"]
   );
 }
 
@@ -142,8 +142,14 @@ export async function importKey(
 ): Promise<CryptoKey> {
   const jwk = JSON.parse(jwkString);
   const algo = type === "symmetric" ? "AES-GCM" : RSA_ALGO;
-  const usages: KeyUsage[] = type === "public" ? ["encrypt"] : ["decrypt"];
-  if (type === "symmetric") usages.push("encrypt");
+  let usages: KeyUsage[];
+  if (type === "public") {
+    usages = ["encrypt", "wrapKey"];
+  } else if (type === "private") {
+    usages = ["decrypt", "unwrapKey"];
+  } else {
+    usages = ["encrypt", "decrypt"];
+  }
 
   return await window.crypto.subtle.importKey(
     "jwk",
@@ -216,6 +222,6 @@ export async function decryptPrivateKey(encryptedKey: string, saltBase64: string
     jwk,
     RSA_ALGO,
     true,
-    ["decrypt"]
+    ["decrypt", "unwrapKey"]
   );
 }
