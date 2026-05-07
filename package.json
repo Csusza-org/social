@@ -2,6 +2,7 @@
   "dependencies": {},
   "devDependencies": {
     "@workos-inc/node": "^9.2.0",
-    "convex": "^1.37.0"
+    "convex": "^1.37.0",
+    "oxlint": "^1.63.0"
   }
 }

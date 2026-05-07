@@ -148,8 +148,74 @@ export async function importKey(
   return await window.crypto.subtle.importKey(
     "jwk",
     jwk,
-    algo as any,
+    algo as RsaHashedImportParams | AesKeyAlgorithm,
     true,
     usages
+  );
+}
+
+/**
+ * Derives an AES-GCM key from a password and salt using PBKDF2.
+ */
+export async function deriveKeyFromPassword(password: string, salt: Uint8Array): Promise<CryptoKey> {
+  const encoder = new TextEncoder();
+  const baseKey = await window.crypto.subtle.importKey(
+    "raw",
+    encoder.encode(password),
+    "PBKDF2",
+    false,
+    ["deriveKey"]
+  );
+
+  return await window.crypto.subtle.deriveKey(
+    {
+      name: "PBKDF2",
+      salt,
+      iterations: 100000,
+      hash: "SHA-256",
+    },
+    baseKey,
+    { name: "AES-GCM", length: 256 },
+    false,
+    ["encrypt", "decrypt"]
+  );
+}
+
+/**
+ * Encrypts the private key using a password-derived key.
+ */
+export async function encryptPrivateKey(privateKey: CryptoKey, password: string): Promise<{ encryptedKey: string, salt: string }> {
+  const salt = window.crypto.getRandomValues(new Uint8Array(16));
+  const masterKey = await deriveKeyFromPassword(password, salt);
+  
+  const jwk = await window.crypto.subtle.exportKey("jwk", privateKey);
+  const encrypted = await encryptWithSymmetricKey(masterKey, JSON.stringify(jwk));
+  
+  return {
+    encryptedKey: encrypted,
+    salt: btoa(String.fromCharCode(...salt)),
+  };
+}
+
+/**
+ * Decrypts the private key using a password-derived key.
+ */
+export async function decryptPrivateKey(encryptedKey: string, saltBase64: string, password: string): Promise<CryptoKey> {
+  const salt = new Uint8Array(
+    atob(saltBase64)
+      .split("")
+      .map((c) => c.charCodeAt(0))
+  );
+  const masterKey = await deriveKeyFromPassword(password, salt);
+  
+  const jwkString = await decryptWithSymmetricKey(masterKey, encryptedKey);
+  const jwk = JSON.parse(jwkString);
+  
+  return await window.crypto.subtle.importKey(
+    "jwk",
+    jwk,
+    RSA_ALGO,
+    true,
+    ["decrypt"]
   );
 }

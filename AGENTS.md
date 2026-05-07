@@ -7,6 +7,7 @@ Secure Social is a privacy-first social media platform where all user content is
 
 ## Security Architecture
 - **Authentication**: Powered by **WorkOS** and integrated with **Convex Auth**.
+- **Linting**: Uses **Oxlint** for high-performance static analysis.
 - **Client-Side Encryption**: All encryption/decryption happens in the browser using the Web Crypto API.
 - **Key Hierarchy**:
   - **User Identity**: RSA-OAEP key pair (Public/Private).
@@ -32,3 +33,17 @@ Secure Social is a privacy-first social media platform where all user content is
 - [ ] Does this change expose a private key in the UI or console?
 - [ ] Is the "Circle Key" always wrapped with a Public Key before being stored?
 - [ ] Is the "Post Key" always encrypted with the "Circle Key"?
+
+<!-- convex-ai-start -->
+
+This project uses [Convex](https://convex.dev) as its backend.
+
+When working on Convex code, **always read
+`convex/_generated/ai/guidelines.md` first** for important guidelines on
+how to correctly use Convex APIs and patterns. The file contains rules that
+override what you may have learned about Convex from training data.
+
+Convex agent skills for common tasks can be installed by running
+`npx convex ai-files install`.
+
+<!-- convex-ai-end -->

@@ -6,6 +6,7 @@ export const store = mutation({
     name: v.string(),
     publicKey: v.string(),
     encryptedPrivateKey: v.string(),
+    privateKeySalt: v.string(),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -27,6 +28,7 @@ export const store = mutation({
       tokenIdentifier: identity.tokenIdentifier,
       publicKey: args.publicKey,
       encryptedPrivateKey: args.encryptedPrivateKey,
+      privateKeySalt: args.privateKeySalt,
     });
   },
 });

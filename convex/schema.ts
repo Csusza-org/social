@@ -7,6 +7,7 @@ export default defineSchema({
     tokenIdentifier: v.string(),
     publicKey: v.string(), // RSA Public Key (PEM or JWK string)
     encryptedPrivateKey: v.string(), // User's private key, encrypted with their password-derived key
+    privateKeySalt: v.string(), // Salt used for PBKDF2
   }).index("by_token", ["tokenIdentifier"]),
 
   circles: defineTable({

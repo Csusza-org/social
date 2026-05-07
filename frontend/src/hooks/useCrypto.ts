@@ -4,19 +4,29 @@ import * as crypto from "../lib/crypto";
 export function useCrypto() {
   const [userKeys, setUserKeys] = useState<CryptoKeyPair | null>(null);
 
-  const setupUser = useCallback(async () => {
+  const setupUser = useCallback(async (password: string) => {
     const keys = await crypto.generateUserKeyPair();
     setUserKeys(keys);
     
     const publicKeyStr = await crypto.exportKey(keys.publicKey);
-    const privateKeyStr = await crypto.exportKey(keys.privateKey);
+    const { encryptedKey, salt } = await crypto.encryptPrivateKey(keys.privateKey, password);
     
-    // In a real app, we'd encrypt the private key with a password-derived key
-    // For now, we'll just return them to be stored (not ideal, but following the flow)
     return {
       publicKey: publicKeyStr,
-      encryptedPrivateKey: privateKeyStr, // TODO: actually encrypt this
+      encryptedPrivateKey: encryptedKey,
+      privateKeySalt: salt,
     };
+  }, []);
+
+  const restoreUserKeys = useCallback(async (
+    encryptedPrivateKey: string,
+    salt: string,
+    publicKeyJWK: string,
+    password: string
+  ) => {
+    const privateKey = await crypto.decryptPrivateKey(encryptedPrivateKey, salt, password);
+    const publicKey = await crypto.importKey(publicKeyJWK, "public");
+    setUserKeys({ privateKey, publicKey });
   }, []);
 
   const decryptCircleKey = useCallback(async (wrappedCircleKey: string) => {
@@ -59,6 +69,7 @@ export function useCrypto() {
   return {
     userKeys,
     setupUser,
+    restoreUserKeys,
     decryptCircleKey,
     encryptPost,
     decryptPost,
