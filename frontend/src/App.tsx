@@ -1,12 +1,12 @@
-import { useState, useEffect, useMemo } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useState, useEffect } from "react";
+import { useQuery, useMutation, Authenticated, Unauthenticated, AuthLoading } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useCrypto } from "./hooks/useCrypto";
-import { Authenticated, Unauthenticated, AuthLoading, useUser } from "@clerk/clerk-react";
+import { useAuth } from "@workos-inc/authkit-react";
 import * as cryptoUtils from "./lib/crypto";
 
 function SocialApp() {
-  const { user } = useUser();
+  const { user } = useAuth();
   const { userKeys, setupUser, decryptCircleKey, encryptPost, decryptPost, setUserKeys } = useCrypto();
   
   const me = useQuery(api.users.getMe);
@@ -21,21 +21,12 @@ function SocialApp() {
   const [newPostContent, setNewPostContent] = useState("");
   const [isInitializing, setIsInitializing] = useState(false);
 
-  // Auto-initialize keys if not present
-  useEffect(() => {
-    if (me && !userKeys && !isInitializing) {
-      // In a real app, we'd prompt for a password and decrypt me.encryptedPrivateKey
-      // For this demo, if keys aren't in memory, we might need to "restore" them
-      // but let's just allow manual setup for now.
-    }
-  }, [me, userKeys, isInitializing]);
-
   const handleRegister = async () => {
     setIsInitializing(true);
     try {
       const { publicKey, encryptedPrivateKey } = await setupUser();
       await storeUser({
-        name: user?.fullName || "Anonymous",
+        name: user?.firstName ? `${user.firstName} ${user.lastName}` : "Anonymous",
         publicKey,
         encryptedPrivateKey,
       });
@@ -89,7 +80,7 @@ function SocialApp() {
           <p>Welcome, {me.name}!</p>
           {!userKeys && (
             <div style={{ border: "1px solid red", padding: "10px", margin: "10px 0" }}>
-              <p>Keys not in memory. (Simulating login/key retrieval...)</p>
+              <p>Keys not in memory.</p>
               <button onClick={async () => {
                 const privKey = await cryptoUtils.importKey(me.encryptedPrivateKey, "private");
                 const pubKey = await cryptoUtils.importKey(me.publicKey, "public");
@@ -183,6 +174,8 @@ function PostItem({ post, circle, decryptPost, decryptCircleKey }: any) {
 }
 
 export default function App() {
+  const { signIn } = useAuth();
+  
   return (
     <main>
       <Authenticated>
@@ -192,7 +185,7 @@ export default function App() {
         <div style={{ padding: "50px", textAlign: "center" }}>
           <h1>Secure Social</h1>
           <p>Please sign in to continue</p>
-          {/* Clerk's SignInButton would go here */}
+          <button onClick={() => signIn()}>Sign In with WorkOS</button>
         </div>
       </Unauthenticated>
       <AuthLoading>

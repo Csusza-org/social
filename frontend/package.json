@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@clerk/clerk-react": "^5.61.3",
+    "@workos-inc/authkit-react": "^0.16.1",
     "convex": "^1.37.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"

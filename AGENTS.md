@@ -6,6 +6,7 @@ This document provides context and safety mandates for AI agents interacting wit
 Secure Social is a privacy-first social media platform where all user content is end-to-end encrypted (E2E) on the client side before being sent to the Convex backend.
 
 ## Security Architecture
+- **Authentication**: Powered by **WorkOS** and integrated with **Convex Auth**.
 - **Client-Side Encryption**: All encryption/decryption happens in the browser using the Web Crypto API.
 - **Key Hierarchy**:
   - **User Identity**: RSA-OAEP key pair (Public/Private).
