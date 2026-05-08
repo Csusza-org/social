@@ -47,3 +47,35 @@ export const getMe = query({
       .unique();
   },
 });
+
+/**
+ * Search users by name prefix. Returns only _id, name, and publicKey to
+ * avoid leaking private key material. Requires authentication.
+ *
+ * NOTE: Using a full table scan with a JS filter here because Convex
+ * doesn't have a native prefix/LIKE search on regular indexes. For
+ * production at scale you'd use a search index, but for small user
+ * counts this is fine.
+ */
+export const search = query({
+  args: { query: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return [];
+    }
+
+    const normalised = args.query.toLowerCase().trim();
+    if (!normalised) return [];
+
+    const all = await ctx.db.query("users").take(200);
+
+    return all
+      .filter((u) => u.name.toLowerCase().includes(normalised))
+      .map((u) => ({
+        _id: u._id,
+        name: u.name,
+        publicKey: u.publicKey,
+      }));
+  },
+});

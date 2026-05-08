@@ -63,6 +63,17 @@ export const addMember = mutation({
       throw new Error("Only the creator can add members");
     }
 
+    // Prevent duplicate membership
+    const existing = await ctx.db
+      .query("circleMembers")
+      .withIndex("by_circle", (q) => q.eq("circleId", args.circleId))
+      .filter((q) => q.eq(q.field("userId"), args.userId))
+      .unique();
+
+    if (existing) {
+      throw new Error("User is already a member of this circle");
+    }
+
     return await ctx.db.insert("circleMembers", {
       circleId: args.circleId,
       userId: args.userId,
@@ -105,5 +116,57 @@ export const getMyCircles = query({
     }
 
     return circles;
+  },
+});
+
+/**
+ * Returns the list of members for a given circle (with their names).
+ * Requires the requesting user to be a member of the circle.
+ */
+export const getMembers = query({
+  args: { circleId: v.id("circles") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return [];
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_token", (q) => q.eq("tokenIdentifier", identity.tokenIdentifier))
+      .unique();
+
+    if (!user) {
+      return [];
+    }
+
+    // Verify caller is a member
+    const callerMembership = await ctx.db
+      .query("circleMembers")
+      .withIndex("by_circle", (q) => q.eq("circleId", args.circleId))
+      .filter((q) => q.eq(q.field("userId"), user._id))
+      .unique();
+
+    if (!callerMembership) {
+      return [];
+    }
+
+    const memberships = await ctx.db
+      .query("circleMembers")
+      .withIndex("by_circle", (q) => q.eq("circleId", args.circleId))
+      .collect();
+
+    const members = [];
+    for (const m of memberships) {
+      const memberUser = await ctx.db.get(m.userId);
+      if (memberUser) {
+        members.push({
+          _id: memberUser._id,
+          name: memberUser.name,
+        });
+      }
+    }
+
+    return members;
   },
 });

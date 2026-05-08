@@ -43,6 +43,10 @@ export const create = mutation({
   },
 });
 
+/**
+ * Lists posts for a circle with the author's name joined in, avoiding
+ * N+1 queries on the client.
+ */
 export const listForCircle = query({
   args: {
     circleId: v.id("circles"),
@@ -73,10 +77,22 @@ export const listForCircle = query({
       throw new Error("User is not a member of this circle");
     }
 
-    return await ctx.db
+    const posts = await ctx.db
       .query("posts")
       .withIndex("by_circle", (q) => q.eq("circleId", args.circleId))
       .order("desc")
-      .collect();
+      .take(100);
+
+    // Join author name server-side to avoid N+1 on the client
+    const postsWithAuthor = [];
+    for (const post of posts) {
+      const author = await ctx.db.get(post.authorId);
+      postsWithAuthor.push({
+        ...post,
+        authorName: author?.name ?? "Unknown",
+      });
+    }
+
+    return postsWithAuthor;
   },
 });

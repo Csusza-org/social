@@ -1,0 +1,72 @@
+/* ============================================================
+   PostCard
+   ============================================================ */
+
+.post-card {
+  padding: 20px;
+  animation: fadeInUp var(--duration-normal) var(--ease-out);
+  animation-fill-mode: both;
+}
+
+.post-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.post-card-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, #818cf8, var(--accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-inverse);
+  flex-shrink: 0;
+}
+
+.post-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.post-card-author {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.post-card-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.post-card-badge {
+  flex-shrink: 0;
+}
+
+.post-card-body p {
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.post-card-error {
+  color: var(--danger) !important;
+  font-size: 0.875rem !important;
+}
+
+.post-card-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

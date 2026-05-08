@@ -1,0 +1,102 @@
+/* ============================================================
+   Feed
+   ============================================================ */
+
+.feed {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.feed-header {
+  padding: 32px 32px 24px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--bg-surface) 0%, transparent 100%);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.feed-title {
+  font-size: 1.75rem;
+  margin: 0 0 4px;
+}
+
+.feed-subtitle {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.feed-content {
+  padding: 24px 32px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.feed-posts {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.post-card-skeleton-wrapper {
+  padding: 20px;
+}
+
+.feed-empty {
+  text-align: center;
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.feed-empty-icon {
+  font-size: 2.5rem;
+  animation: pulse 2s ease infinite;
+}
+
+.feed-empty p {
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+}
+
+/* No-circle-selected state */
+.feed-placeholder {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 48px;
+  text-align: center;
+}
+
+.feed-placeholder-icon {
+  font-size: 4rem;
+  opacity: 0.3;
+  animation: pulse 3s ease infinite;
+}
+
+.feed-placeholder p {
+  font-size: 1.0625rem;
+  color: var(--text-muted);
+  max-width: 320px;
+}
+
+@media (max-width: 768px) {
+  .feed-header {
+    padding: 20px 16px 16px;
+  }
+  .feed-content {
+    padding: 16px;
+  }
+}
