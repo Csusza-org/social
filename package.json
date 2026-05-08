@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "dev:frontend": "cd frontend && bun run dev",
+    "dev:convex": "bunx convex dev",
+    "dev": "bunx concurrently \"bun run dev:frontend\" \"bun run dev:convex\""
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@workos-inc/node": "^9.2.0",
+    "concurrently": "^9.2.1",
+    "convex": "^1.37.0",
+    "oxlint": "^1.63.0"
+  }
+}

@@ -1,0 +1,50 @@
+/* ============================================================
+   Layout — Sidebar + Main
+   ============================================================ */
+
+.layout {
+  display: flex;
+  min-height: 100dvh;
+}
+
+.layout-sidebar {
+  position: sticky;
+  top: 0;
+  width: var(--sidebar-width);
+  height: 100dvh;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.layout-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  height: 100dvh;
+}
+
+/* Mobile: overlay sidebar */
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+  .layout-sidebar {
+    position: fixed;
+    width: 100%;
+    height: auto;
+    max-height: 50dvh;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .layout-main {
+    margin-top: 0;
+    height: auto;
+  }
+}
